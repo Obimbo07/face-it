@@ -18,4 +18,4 @@ def encode_face(image):
 
 def compare_faces(known_encodings, face_to_compare_encoding):
     # Compare faces and get the distance
-    return face_recognition.compare_faces(known_encodings, face_to_compare_encoding, tolerance=0.4), face_recognition.face_distance(known_encodings, face_to_compare_encoding)
+    return face_recognition.compare_faces(known_encodings, face_to_compare_encoding, tolerance=0.6), face_recognition.face_distance(known_encodings, face_to_compare_encoding)
