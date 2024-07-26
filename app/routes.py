@@ -1,23 +1,19 @@
-from flask import Blueprint, request, jsonify
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
 from app.face_verification import load_image_with_opencv, verify_faces
 
-main = Blueprint('main', __name__)
+router = APIRouter()
 
-@main.route('/compare', methods=['POST'])
-def compare_faces_endpoint():
-    known_image = request.files.get('known_image')
-    compared_image = request.files.get('compared_image')
-
+@router.post("/compare")
+async def compare_faces_endpoint(known_image: UploadFile = File(...), compared_image: UploadFile = File(...)):
     if not known_image or not compared_image:
-        return jsonify({"error": "Missing image files"}), 400
+        raise HTTPException(status_code=400, detail="Missing image files")
 
-    # Load images with OpenCV
-    known_image_data = load_image_with_opencv(known_image)
-    compared_image_data = load_image_with_opencv(compared_image)
+    known_image_data = load_image_with_opencv(known_image.file)
+    compared_image_data = load_image_with_opencv(compared_image.file)
 
     try:
-        # Verify faces using DeepFace with image arrays
         match = verify_faces(known_image_data, compared_image_data)
-        return(match)
+        return JSONResponse(content={"match": match})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        raise HTTPException(status_code=500, detail=str(e))

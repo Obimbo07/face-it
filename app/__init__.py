@@ -1,9 +1,9 @@
-from flask import Flask
+from fastapi import FastAPI
 
 def create_app():
-    app = Flask(__name__)
+    app = FastAPI()
 
-    from app.routes import main
-    app.register_blueprint(main)
+    from app.routes import router
+    app.include_router(router)
 
     return app
