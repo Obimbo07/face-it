@@ -19,9 +19,15 @@ def load_image_with_opencv(file):
         raise ValueError(f"Unsupported image format: {e}")
 
 def verify_faces(known_image, compared_image):
-    try:
-        # Perform face verification
-        result = DeepFace.verify(known_image, compared_image)
-        return result
-    except Exception as e:
-        raise ValueError(f"Error during face verification: {e}")
+    # Perform face verification
+    result = DeepFace.verify(known_image, compared_image)
+    
+    # Custom response formatting
+    match_response = {
+        "verified": result["verified"],
+        "distance": result["distance"],
+        "similarity_metric": result["similarity_metric"],
+        "time": result.get("time", 0.0)
+    }
+    
+    return {"match": match_response}
