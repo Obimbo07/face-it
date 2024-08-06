@@ -31,6 +31,7 @@ async def face_comparison(first_image_attendance: UploadFile = File(...), second
         # secondimage_attendance = loading_images(second_image_attendance_data)
         
         matching = compare_faces(first_image_attendance.file, second_image_attendance.file)
-        return JSONResponse(content={"matching": matching})
+        
+        return JSONResponse(content=matching)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,5 +1,5 @@
-import face_recognition
-
+from  fastapi import HTTPException
+from  fastapi.responses import JSONResponse
 
 # def loading_images(file):
 #   image_file = face_recognition.load_image_file(file)
@@ -14,18 +14,19 @@ import face_recognition
 import face_recognition
 
 def compare_faces(known_image_file, unknown_image_file):
-    first_pic = face_recognition.load_image_file(known_image_file)
-    known_face_encoding = face_recognition.face_encodings(first_pic)[0]
-    
-    second_pic = face_recognition.load_image_file(unknown_image_file)
-    face_encoding_to_check = face_recognition.face_encodings(second_pic)[0]
+    try:
+        first_pic = face_recognition.load_image_file(known_image_file)
+        known_face_encoding = face_recognition.face_encodings(first_pic)[0]
+        
+        second_pic = face_recognition.load_image_file(unknown_image_file)
+        face_encoding_to_check = face_recognition.face_encodings(second_pic)[0]
 
-    results = face_recognition.compare_faces([known_face_encoding], face_encoding_to_check)
-    
-    if results[0] == True:
-        print("You have been successfully verified!")
-        return True
-    else:
-        print("This is not you, please contact support")
-        return False
+        compare_results = face_recognition.compare_faces([known_face_encoding], face_encoding_to_check, tolerance=0.2)
+        compare_distance = face_recognition.face_distance([known_face_encoding], face_encoding_to_check)
+        
+        results = bool(compare_results[0])
+        distance = float(compare_distance)
 
+        return { "match": results, "distance": distance }
+    except IndexError:
+       raise HTTPException(status_code=400, detail="No face found on both Images. Please take a potrait with your face straight")
